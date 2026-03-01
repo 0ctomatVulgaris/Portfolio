@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio – BUT MMI</title>
+
+<style>
+:root {
+  --primary: #1fa055;
+  --secondary: #1fa055;
+  --dark: #1e1e2f;
+  --light: #ffffff;
+  --card: #ffffff;
+  --star-color: gold;
+}
+
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ===== BODY ===== */
+body {
+  background: var(--light);
+  position: relative;
+  color: #333;
+  line-height: 1.6;
+  overflow-x: hidden; /* éviter scroll horizontal à cause des bandes */
+}
+
+
+/* ===== MARBRE EN FOND ===== */
+.marble-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('logos/marble.jpg') repeat-y;
+  background-size: cover;
+  background-attachment: fixed; /* parallaxe léger */
+  z-index: 0;
+}
+
+/* ===== BANDE BLANCHE AU CENTRE ===== */
+.white-strip {
+  position: fixed;
+  top: 0;
+  left: 15%;      /* marge gauche pour montrer le marbre */
+  width: 70%;     /* largeur de la bande blanche */
+  height: 100%;
+  background: rgba(250, 250, 250, 0.947);
+  z-index: 1;
+  box-shadow: 0 5px 80px rgba(0,0,0,0.75);
+  pointer-events: none; /* laisse passer le scroll sur le contenu */
+}
+
+/* ===== HEADER ===== */
+header {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  padding: 20px 0;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* ===== NAV ===== */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  position: relative;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 14px;
+  font-weight: 500;
+  position: relative;
+}
+
+nav button:hover { color: var(--light); }
+
+nav .slider {
+  position: absolute;
+  bottom: 0;
+  height: 3px;
+  background: var(--light);
+  border-radius: 2px;
+  transition: all 0.5s ease;
+}
+
+/* ===== MAIN ===== */
+main {
+  max-width: 1100px;
+  margin: 50px auto;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0);
+  border-radius: 0px;
+  box-shadow: 0 0px 0px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1;
+  min-height: 600px;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+section.active {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+  pointer-events: auto;
+}
+
+h1 { margin-bottom: 25px; color: var(--dark); text-align: center; }
+
+/* ===== À PROPOS ===== */
+.about {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.about img {
+  width: 100%;
+  border-radius: 12px;
+  background: #ddd;
+  object-fit: cover;
+  transform: scale(0.95);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.about img:hover {
+  transform: scale(1);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* ===== COMPÉTENCES ===== */
+.skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skill-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 25px;
+  background: var(--card);
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  align-items: center;
+  transition: transform 0.4s, box-shadow 0.4s, background 0.4s;
+}
+
+.skill-item:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  background: #f0f4ff;
+}
+
+.skill-left { text-align: center; }
+
+.skill-left img { width: 60px; height: 60px; object-fit: contain; margin-bottom: 8px; }
+
+.skill-name { font-weight: bold; margin-bottom: 6px; }
+
+.stars { color: var(--star-color); font-size: 18px; letter-spacing: 2px; }
+
+/* ===== PROJETS ===== */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.project {
+  background: var(--card);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+
+.project:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+}
+
+.project img,
+.project video,
+.project audio {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInMedia 0.8s forwards;
+}
+
+@keyframes fadeInMedia {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+  margin-top: 50px;
+  border-top: 1px solid #ddd;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .about { grid-template-columns: 1fr; text-align: center; }
+  .about div { text-align: left; }
+  .skill-item { grid-template-columns: 100px 1fr; }
+}
+
+/* ===== LOGO TOGGLE ===== */
+.logo-container {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+#logoToggle {
+  width: 80px;                    /* taille du logo */
+  border-radius: 15px;            /* angles arrondis */
+  background: #1fa055;              /* fond pour bien voir l’ombre */
+  padding: 15px;                   /* espace autour du logo */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 50; 
+}
+
+/* Ombre visible seulement quand header est caché */
+#logoToggle.shadow {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.75);
+}
+
+
+#logoToggle:hover {
+  transform: scale(1.1);
+}
+
+#arrowToggle {
+  font-size: 50px;
+  color: var(--primary);
+  margin-top: 4px;
+  transition: transform 0.3s ease;
+}
+
+/* ===== HEADER CACHÉ ===== */
+header.hidden {
+  transform: translateY(-100%);
+}
+
+header {
+  transition: transform 0.5s ease;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="logo-container">
+  <img src="logos/logo.png" alt="Logo" id="logoToggle">
+  <div id="arrowToggle">˄</div>
+</div>
+
+<!-- BANDES LATÉRALES -->
+<div class="marble-bg"></div>
+<div class="white-strip"></div>
+
+<header>
+  <nav>
+    <button class="tab active" data-tab="about">À propos</button>
+    <button class="tab" data-tab="skills">Compétences</button>
+    <button class="tab" data-tab="projects">Réalisations</button>
+    <div class="slider"></div>
+  </nav>
+
+  
+</header>
+
+<main>
+<!-- ===== À PROPOS ===== -->
+<section id="about" class="active">
+  <div class="about">
+    <img src="moi.png" alt="Milo">
+    <div>
+      <h1>Milo Serusier</h1>
+      <p>Ancien élève du lycée Ronsard à Vendôme, j’ai suivi une seconde générale suivie d'une première et terminale STI2D, option SIN. Durant ces deux années, j’ai participé à plusieurs projets en groupe, au cours desquels j’ai assuré la modélisation, la conception et le développement informatique tout en respectant un cahier des charges matérialisé en SysML, notamment à travers la conception de pièces techniques en 3D via SolidWorks ainsi que la création d’applications B4A et de programmes Arduino.</p>
+      <p>J’ai effectué un stage au pôle communication de la SNCF lors de ma seconde, où j’ai contribué à la création de contenus pour les réseaux sociaux, notamment des publications Twitter lors de la course Paris-Versailles 2024, sponsorisé par l’entreprise. J’ai aussi réalisé une vidéo de félicitations destinée aux équipes mobilisées lors d'un forum pour la préparation des équipes aux Jeux Olympiques.</p>
+      <p>En parallèle, je pratique la musique assistée par ordinateur depuis trois ans sur Ableton via une école de musique. Je réalise aussi des logos et identités visuelles avec GIMP et Inkscape dans un cadre personnel et créatif, et je mène des projets de développement personnel, comme récemment avec la création d’un bot Discord en Python. Je travaille également actuellement sur un jeu vidéo sous Unity, en collaboration avec plusieurs amis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COMPÉTENCES ===== -->
+<section id="skills">
+  <h1>Mes compétences logicielles</h1>
+  <div class="skills-list">
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/DaVinciResolve.png">
+        <div class="skill-name">DaVinci Resolve</div>
+        <div class="stars">★★★☆☆</div>
+      </div>
+      <p>
+        Montage vidéo et étalonnage. Je n’ai pas encore beaucoup exploré les outils d’effets spéciaux.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/OBS.png">
+        <div class="skill-name">OBS Studio</div>
+        <div class="stars">★★★☆☆</div>
+      </div>
+      <p>
+        Organisation des périphériques et création de scènes pour l’enregistrement et la diffusion de contenu.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Canva.png">
+        <div class="skill-name">Canva</div>
+        <div class="stars">★★★★★</div>
+      </div>
+      <p>
+        Création de supports de présentation ou de diaporamas structurés et visuels à plusieurs.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/PowerPoint.png">
+        <div class="skill-name">PowerPoint</div>
+        <div class="stars">★★★★☆</div>
+      </div>
+      <p>
+        Création de supports de présentation ou de diaporamas structurés et visuels.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Audacity.png">
+        <div class="skill-name">Audacity</div>
+        <div class="stars">★★★☆☆</div>
+      </div>
+      <p>
+        Analyse de spectre de fréquences, traitement audio et mixage multipiste.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Ableton.png">
+        <div class="skill-name">Ableton Live</div>
+        <div class="stars">★★★★★</div>
+      </div>
+      <p>
+        Production musicale, préparation d’un set live à jouer sur scène, composition et mixage.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Gimp.png">
+        <div class="skill-name">GIMP</div>
+        <div class="stars">★★★★☆</div>
+      </div>
+      <p>
+        Retouche photo, détourage, suppression d’éléments et prototypage graphique avant vectorisation.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Inkcape.png">
+        <div class="skill-name">Inkscape</div>
+        <div class="stars">★★★☆☆</div>
+      </div>
+      <p>
+        Création de logos et d’identités visuelles.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Solidwork.png">
+        <div class="skill-name">SolidWorks</div>
+        <div class="stars">★★★☆☆</div>
+      </div>
+      <p>
+        Modélisation 3D de pièces techniques simples.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Excel.png">
+        <div class="skill-name">Excel</div>
+        <div class="stars">★★☆☆☆</div>
+      </div>
+      <p>
+        Organisation de données et calculs simples.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Arduino.png">
+        <div class="skill-name">Arduino</div>
+        <div class="stars">★★★★☆</div>
+      </div>
+      <p>
+        Programmation de cartes Arduino et utilisation de nombreux capteurs, moteurs et modules Internet.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/B4A.png">
+        <div class="skill-name">Basic for Android</div>
+        <div class="stars">★★★☆☆</div>
+      </div>
+      <p>
+        Création d’interfaces homme-machine capables de piloter des systèmes Arduino, et développement d’applications pouvant envoyer et recevoir des données via Wi-Fi.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/Unity.png">
+        <div class="skill-name">Unity</div>
+        <div class="stars">★★☆☆☆</div>
+      </div>
+      <p>
+        Création d’environnements 2D, exploitation d’un moteur physique et mise en œuvre d’un jeu en C#.
+      </p>
+    </div>
+
+    <div class="skill-item">
+      <div class="skill-left">
+        <img src="logos/VSC.png">
+        <div class="skill-name">Visual Studio Code</div>
+        <div class="stars">★★★★★</div>
+      </div>
+      <p>
+        Développer dans un environnement organisé.
+      </p>
+    </div>
+    <!-- … répéter pour toutes les compétences -->
+  </div>
+</section>
+
+<!-- ===== PROJETS ===== -->
+<section id="projects">
+  <h1>Mes réalisations</h1>
+  <div class="projects">
+    <div class="project">
+      <img src="projects/image1.jpg" alt="Affiche graphique">
+      <p>loggoooo</p>
+    </div>
+    <div class="project">
+      <video controls src="projects/ForumN&U.mp4"></video>
+      <p>Vidéo DaVinci Stagee</p>
+    </div>
+    <div class="project">
+      <audio controls src="projects/audio1.mp3"></audio>
+      <p>Musique Ableton</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>© 2025 – Portfolio BUT MMI</footer>
+
+<script>
+
+const logo = document.getElementById("logoToggle");
+const arrow = document.getElementById("arrowToggle");
+const header = document.querySelector("header");
+
+logo.addEventListener("click", toggleHeader);
+arrow.addEventListener("click", toggleHeader);
+
+function toggleHeader() {
+  header.classList.toggle("hidden");
+
+  if (header.classList.contains("hidden")) {
+    arrow.textContent = "˅";      // header caché
+    logo.classList.add("shadow");  // logo avec ombre
+  } else {
+    arrow.textContent = "˄";      // header visible
+    logo.classList.remove("shadow"); // logo sans ombre
+  }
+}
+
+
+// Onglets
+const tabs = document.querySelectorAll(".tab");
+const sections = document.querySelectorAll("section");
+const slider = document.querySelector(".slider");
+
+function moveSlider(tab){
+  slider.style.width = `${tab.offsetWidth}px`;
+  slider.style.left = `${tab.offsetLeft}px`;
+}
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    const current = document.querySelector("section.active");
+    const next = document.getElementById(tab.dataset.tab);
+
+    current.classList.remove("active");
+    next.classList.add("active");
+
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+
+    moveSlider(tab);
+  });
+});
+
+moveSlider(document.querySelector(".tab.active"));
+
+// Parallax bandes latérales
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  document.querySelector('.marble-bg').style.transform = `translateY(${scrollY * 0.03}px)`;
+});
+</script>
+
+</body>
+</html>
